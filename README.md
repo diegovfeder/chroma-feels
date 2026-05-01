@@ -33,20 +33,24 @@ How storytellers weaponize color psychology:
 
 ## Tech Stack
 
-- **Framework**: Next.js 14+ (App Router)
+- **Runtime**: Bun
+- **Framework**: Next.js 14 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **Fonts**: Newsreader (serif display), JetBrains Mono (monospace UI)
+- **Testing**: Playwright (e2e)
 - **Deployment**: Vercel
-- **Data**: Static JSON (no database needed — the dataset is curated, not generated)
+- **Data**: Static TypeScript (no database needed — the dataset is curated, not generated)
 
 ## Project Structure
 
 ```
 chroma-feels/
+├── SPEC.md                   # Living project spec (markdown-driven)
+├── NEXT_REACT_UPGRADE.md     # Spec-driven Next.js + React bump plan
 ├── app/
 │   ├── layout.tsx
-│   ├── page.tsx              # Main explorer
+│   ├── page.tsx              # Main explorer (4 tabs, all state)
 │   └── globals.css
 ├── components/
 │   ├── EmotionWheel.tsx      # Radial SVG chart
@@ -64,6 +68,8 @@ chroma-feels/
 │   └── fiction.ts            # Fictional color systems
 ├── types/
 │   └── index.ts              # Shared TypeScript interfaces
+├── e2e/
+│   └── app.spec.ts           # Playwright smoke tests
 └── public/
     └── og-image.png
 ```
@@ -72,14 +78,18 @@ chroma-feels/
 
 ```bash
 # Clone
-git clone https://github.com/YOUR_USERNAME/chroma-feels.git
+git clone https://github.com/diegovfeder/chroma-feels.git
 cd chroma-feels
 
-# Install
-pnpm install
+# Install (requires Bun — https://bun.sh)
+bun install
 
-# Dev
-pnpm dev
+# Dev server
+bun run dev
+
+# E2E tests
+bunx playwright install chromium   # first time only
+bunx playwright test
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
@@ -96,7 +106,8 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Roadmap
 
-- [ ] Port prototype to Next.js + TypeScript
+- [x] Port prototype to Next.js + TypeScript + Bun
+- [ ] Upgrade to Next.js 16 + React 19 with passing build, lint, and e2e tests
 - [ ] Full dataset: expand from 30 to 77+ emotions from original research
 - [ ] Culture comparison mode: pick two cultures, see where they agree/disagree
 - [ ] Story mode: auto-play through emotions with the most cultural divergence
