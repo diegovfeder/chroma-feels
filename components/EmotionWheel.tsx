@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import type { CulturalEmotion, ColorKey } from '@/types';
 import { COLORS } from '@/data/colors';
 
@@ -55,10 +56,26 @@ export function EmotionWheel({ emotions, selected, onSelect, activeColor }: Emot
   const outerR = 245;
   const total = emotions.length;
 
+  const [wheelRotation, setWheelRotation] = useState(0);
+
+  useEffect(() => {
+    if (!selected) {
+      setWheelRotation((current) => current + ((0 - current) % 360 + 540) % 360 - 180);
+      return;
+    }
+    const i = emotions.findIndex((e) => e.id === selected.id);
+    if (i < 0) return;
+    const sa = (i / total) * Math.PI * 2 - Math.PI / 2 + 0.007;
+    const ea = ((i + 1) / total) * Math.PI * 2 - Math.PI / 2 - 0.007;
+    const mid = (sa + ea) / 2;
+    const target = -90 - (mid * 180) / Math.PI;
+    setWheelRotation((current) => current + ((target - current) % 360 + 540) % 360 - 180);
+  }, [selected, emotions, total]);
+
   return (
     <svg
       viewBox={`0 0 ${svgSize} ${svgSize}`}
-      className="w-full max-w-[560px] h-auto block mx-auto"
+      className="w-full max-w-[560px] max-h-full h-auto block mx-auto"
     >
       <defs>
         <filter id="seg-glow">
@@ -74,80 +91,85 @@ export function EmotionWheel({ emotions, selected, onSelect, activeColor }: Emot
       <circle cx={cx} cy={cy} r={outerR + 16} fill="none" stroke="rgba(255,255,255,0.025)" strokeWidth="0.5" />
       <circle cx={cx} cy={cy} r={innerR - 4} fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
 
-      {emotions.map((emo, i) => {
-        // Round to 4 decimal places to prevent hydration mismatches
-        const r4 = (n: number) => Math.round(n * 1e4) / 1e4;
-        const sa = r4((i / total) * Math.PI * 2 - Math.PI / 2 + 0.007);
-        const ea = r4(((i + 1) / total) * Math.PI * 2 - Math.PI / 2 - 0.007);
-        const pairs = Object.entries(emo.colors);
-        const ringW = r4((outerR - innerR) / Math.max(pairs.length, 1));
-        const isSel = selected?.id === emo.id;
+      <g
+        transform={`rotate(${wheelRotation} ${cx} ${cy})`}
+        style={{ transition: 'transform 600ms cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+      >
+        {emotions.map((emo, i) => {
+          const r4 = (n: number) => Math.round(n * 1e4) / 1e4;
+          const sa = r4((i / total) * Math.PI * 2 - Math.PI / 2 + 0.007);
+          const ea = r4(((i + 1) / total) * Math.PI * 2 - Math.PI / 2 - 0.007);
+          const pairs = Object.entries(emo.colors);
+          const ringW = r4((outerR - innerR) / Math.max(pairs.length, 1));
+          const isSel = selected?.id === emo.id;
 
-        return (
-          <g key={emo.id} onClick={() => onSelect(emo)} style={{ cursor: 'pointer' }}>
-            {pairs.map(([cultureKey, colorKey], ci) => {
-              if (!colorKey) return null;
-              const r1 = r4(innerR + ci * ringW);
-              const r2 = r4(innerR + (ci + 1) * ringW);
-              const c = COLORS[colorKey];
-              const large = ea - sa > Math.PI ? 1 : 0;
-              const d = [
-                `M ${r4(cx + r1 * Math.cos(sa))} ${r4(cy + r1 * Math.sin(sa))}`,
-                `L ${r4(cx + r2 * Math.cos(sa))} ${r4(cy + r2 * Math.sin(sa))}`,
-                `A ${r2} ${r2} 0 ${large} 1 ${r4(cx + r2 * Math.cos(ea))} ${r4(cy + r2 * Math.sin(ea))}`,
-                `L ${r4(cx + r1 * Math.cos(ea))} ${r4(cy + r1 * Math.sin(ea))}`,
-                `A ${r1} ${r1} 0 ${large} 0 ${r4(cx + r1 * Math.cos(sa))} ${r4(cy + r1 * Math.sin(sa))}`,
-                'Z',
-              ].join(' ');
+          return (
+            <g key={emo.id} onClick={() => onSelect(emo)} style={{ cursor: 'pointer' }}>
+              {pairs.map(([cultureKey, colorKey], ci) => {
+                if (!colorKey) return null;
+                const r1 = r4(innerR + ci * ringW);
+                const r2 = r4(innerR + (ci + 1) * ringW);
+                const c = COLORS[colorKey];
+                const large = ea - sa > Math.PI ? 1 : 0;
+                const d = [
+                  `M ${r4(cx + r1 * Math.cos(sa))} ${r4(cy + r1 * Math.sin(sa))}`,
+                  `L ${r4(cx + r2 * Math.cos(sa))} ${r4(cy + r2 * Math.sin(sa))}`,
+                  `A ${r2} ${r2} 0 ${large} 1 ${r4(cx + r2 * Math.cos(ea))} ${r4(cy + r2 * Math.sin(ea))}`,
+                  `L ${r4(cx + r1 * Math.cos(ea))} ${r4(cy + r1 * Math.sin(ea))}`,
+                  `A ${r1} ${r1} 0 ${large} 0 ${r4(cx + r1 * Math.cos(sa))} ${r4(cy + r1 * Math.sin(sa))}`,
+                  'Z',
+                ].join(' ');
 
-              const isMatch = activeColor && colorKey === activeColor;
-              const op = activeColor ? (isMatch ? 1 : 0.12) : isSel ? 1 : 0.7;
+                const isMatch = activeColor && colorKey === activeColor;
+                const op = activeColor ? (isMatch ? 1 : 0.12) : isSel ? 1 : 0.7;
 
-              return (
-                <path
-                  key={`${emo.id}-${cultureKey}`}
-                  d={d}
-                  fill={c.hex}
-                  opacity={op}
-                  stroke={isSel ? '#fff' : 'rgba(0,0,0,0.5)'}
-                  strokeWidth={isSel ? 1.5 : 0.4}
-                  style={{ transition: 'opacity 0.35s ease' }}
-                />
-              );
-            })}
+                return (
+                  <path
+                    key={`${emo.id}-${cultureKey}`}
+                    d={d}
+                    fill={c.hex}
+                    opacity={op}
+                    stroke={isSel ? '#fff' : 'rgba(0,0,0,0.5)'}
+                    strokeWidth={isSel ? 1.5 : 0.4}
+                    style={{ transition: 'opacity 0.35s ease' }}
+                  />
+                );
+              })}
 
-            {(() => {
-              const mid = r4((sa + ea) / 2);
-              const lr = outerR + 12;
-              const lx = r4(cx + lr * Math.cos(mid));
-              const ly = r4(cy + lr * Math.sin(mid));
-              const rot = r4((mid * 180) / Math.PI + (mid > Math.PI / 2 && mid < 1.5 * Math.PI ? 180 : 0));
-              const anchor = mid > Math.PI / 2 && mid < 1.5 * Math.PI ? 'end' : 'start';
+              {(() => {
+                const mid = r4((sa + ea) / 2);
+                const lr = outerR + 12;
+                const lx = r4(cx + lr * Math.cos(mid));
+                const ly = r4(cy + lr * Math.sin(mid));
+                const rot = r4((mid * 180) / Math.PI + (mid > Math.PI / 2 && mid < 1.5 * Math.PI ? 180 : 0));
+                const anchor = mid > Math.PI / 2 && mid < 1.5 * Math.PI ? 'end' : 'start';
 
-              return (
-                <text
-                  x={lx}
-                  y={ly}
-                  fill={isSel ? '#fff' : 'rgba(255,255,255,0.4)'}
-                  fontSize="6"
-                  fontFamily="'JetBrains Mono', monospace"
-                  textAnchor={anchor as 'start' | 'middle' | 'end'}
-                  dominantBaseline="central"
-                  transform={`rotate(${rot}, ${lx}, ${ly})`}
-                  style={{ transition: 'fill 0.3s', pointerEvents: 'none', letterSpacing: '0.03em' }}
-                >
-                  {emo.name}
-                </text>
-              );
-            })()}
-          </g>
-        );
-      })}
+                return (
+                  <text
+                    x={lx}
+                    y={ly}
+                    fill={isSel ? '#fff' : 'rgba(255,255,255,0.4)'}
+                    fontSize="11"
+                    fontWeight={isSel ? 500 : 400}
+                    fontFamily="'JetBrains Mono', monospace"
+                    textAnchor={anchor as 'start' | 'middle' | 'end'}
+                    dominantBaseline="central"
+                    transform={`rotate(${rot}, ${lx}, ${ly})`}
+                    style={{ transition: 'fill 0.3s', pointerEvents: 'none', letterSpacing: '0.03em' }}
+                  >
+                    {emo.name}
+                  </text>
+                );
+              })()}
+            </g>
+          );
+        })}
+      </g>
 
       <circle cx={cx} cy={cy} r={innerR - 6} fill="url(#center-grad)" />
-      <text x={cx} y={cy - 6} fill="rgba(255,255,255,0.25)" fontSize="7.5"
+      <text x={cx} y={cy - 8} fill="rgba(255,255,255,0.25)" fontSize="13"
         fontFamily="'Newsreader', serif" fontStyle="italic" textAnchor="middle">colour</text>
-      <text x={cx} y={cy + 10} fill="rgba(255,255,255,0.25)" fontSize="7.5"
+      <text x={cx} y={cy + 12} fill="rgba(255,255,255,0.25)" fontSize="13"
         fontFamily="'Newsreader', serif" fontStyle="italic" textAnchor="middle">× culture</text>
     </svg>
   );
