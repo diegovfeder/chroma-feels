@@ -31,14 +31,14 @@ export function PsychRow({ item, isExpanded, onToggle }: PsychRowProps) {
           />
         </svg>
         <span className="flex-1 text-sm text-gray-300">{item.name}</span>
-        <span className="text-[9px] text-gray-500 font-mono">
+        <span className="text-2xs text-gray-500 font-mono">
           no color: {Math.round(item.noneRatio * 100)}%
         </span>
       </div>
 
       {isExpanded && (
         <div className="mt-2 ml-10">
-          <div className="flex gap-4 items-center text-[10px] text-white/40 mb-2">
+          <div className="flex gap-4 items-center text-xs text-white/40 mb-2">
             <span>
               dominant <span className="font-mono" style={{ color: dominant.hex }}>{dominant.name}</span>
             </span>

@@ -14,7 +14,7 @@ export function FictionSystem({ system }: FictionSystemProps) {
   return (
     <div className="p-4">
       <h2 className="font-serif text-xl text-white mb-1">{system.title}</h2>
-      <div className="text-[10px] text-gray-400 italic font-serif mb-3">
+      <div className="text-xs text-gray-400 italic font-serif mb-3">
         {system.source} — {system.character}
       </div>
       <p className="text-sm text-gray-400 leading-relaxed mb-4">{system.description}</p>
@@ -61,7 +61,7 @@ export function FictionSystem({ system }: FictionSystemProps) {
                   />
                 )}
                 <span className="flex-1 text-sm text-gray-300">{m.emotion}</span>
-                <span className="text-[9px] text-gray-400 italic font-serif">
+                <span className="text-2xs text-gray-400 italic font-serif">
                   {m.name.split('—')[0].trim()}
                 </span>
               </div>
@@ -69,12 +69,12 @@ export function FictionSystem({ system }: FictionSystemProps) {
               {isExp && (
                 <div className="mt-2 ml-7">
                   <div
-                    className="text-[11px] italic font-serif mb-1"
+                    className="text-sm italic font-serif mb-1"
                     style={{ color: `${c?.hex || '#aaa'}aa` }}
                   >
                     {m.name}
                   </div>
-                  <p className="text-[11px] leading-relaxed text-gray-400">{m.detail}</p>
+                  <p className="text-sm leading-relaxed text-gray-400">{m.detail}</p>
                 </div>
               )}
             </div>
@@ -86,7 +86,7 @@ export function FictionSystem({ system }: FictionSystemProps) {
         className="p-3.5 mt-4 rounded-lg border-l-4"
         style={{ background: 'rgba(255,255,255,0.02)', borderLeftColor: 'rgba(255,255,255,0.08)' }}
       >
-        <div className="text-[9px] uppercase tracking-wider text-gray-400 mb-1.5">Why It Works</div>
+        <div className="text-2xs uppercase tracking-wider text-gray-400 mb-1.5">Why It Works</div>
         <p className="text-sm leading-relaxed text-gray-400">{system.insight}</p>
       </div>
     </div>

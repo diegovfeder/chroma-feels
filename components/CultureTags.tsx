@@ -19,7 +19,7 @@ export function CultureTags({ emotion }: CultureTagsProps) {
         return (
           <span
             key={cultureKey}
-            className="inline-flex items-center gap-1.5 px-2 py-1 rounded text-[9px] uppercase tracking-wider font-mono"
+            className="inline-flex items-center gap-1.5 px-2 py-1 rounded text-2xs uppercase tracking-wider font-mono"
             style={{
               background: `${color.hex}20`,
               border: `1px solid ${color.hex}60`,

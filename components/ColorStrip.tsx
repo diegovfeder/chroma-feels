@@ -21,7 +21,7 @@ export function ColorStrip({ active, onSelect }: ColorStripProps) {
           <button
             key={key}
             onClick={() => onSelect(key)}
-            className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-mono rounded transition-all duration-200"
+            className="px-3 py-1.5 text-xs uppercase tracking-wider font-mono rounded transition-all duration-200"
             style={{
               background: isActive ? color.hex : 'rgba(255,255,255,0.04)',
               color: isActive ? (color.light ? '#111' : '#fff') : 'rgba(255,255,255,0.5)',
