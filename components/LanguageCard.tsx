@@ -29,7 +29,7 @@ export function LanguageCard({ colorKey }: LanguageCardProps) {
       </div>
 
       <div className="mb-4">
-        <div className="text-[9px] uppercase tracking-wider text-gray-400 mb-2">Expressions</div>
+        <div className="text-2xs uppercase tracking-wider text-gray-400 mb-2">Expressions</div>
         <div className="space-y-2">
           {data.expressions.map((expr, i) => (
             <div
@@ -38,19 +38,19 @@ export function LanguageCard({ colorKey }: LanguageCardProps) {
               style={{ background: 'rgba(255,255,255,0.02)' }}
             >
               <span className="text-xs text-gray-300">
-                <span className="text-[9px] uppercase tracking-wider text-gray-500 mr-2">
+                <span className="text-2xs uppercase tracking-wider text-gray-500 mr-2">
                   {expr.lang}
                 </span>
                 &ldquo;{expr.phrase}&rdquo;
               </span>
-              <span className="text-[10px] text-gray-400 italic">{expr.meaning}</span>
+              <span className="text-xs text-gray-400 italic">{expr.meaning}</span>
             </div>
           ))}
         </div>
       </div>
 
       <div>
-        <div className="text-[9px] uppercase tracking-wider text-gray-400 mb-2">Etymology</div>
+        <div className="text-2xs uppercase tracking-wider text-gray-400 mb-2">Etymology</div>
         <p className="text-sm leading-relaxed text-gray-400">{data.etymology}</p>
       </div>
     </div>
